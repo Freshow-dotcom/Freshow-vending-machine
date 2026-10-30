@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Smart Beverage Machine</title>
+
+<style>
+
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+    font-family:'Segoe UI',sans-serif;
+}
+
+body{
+    background:linear-gradient(135deg,#1f1c2c,#928dab);
+    min-height:100vh;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    padding:20px;
+}
+
+.container{
+    width:100%;
+    max-width:450px;
+    background:white;
+    border-radius:25px;
+    overflow:hidden;
+    box-shadow:0 15px 40px rgba(0,0,0,0.3);
+}
+
+.header{
+    background:#1b1b1b;
+    color:white;
+    text-align:center;
+    padding:25px;
+}
+
+.header h1{
+    font-size:28px;
+}
+
+.header p{
+    opacity:0.8;
+    margin-top:5px;
+}
+
+.screen{
+    padding:20px;
+}
+
+.card{
+    background:#ffffff;
+    border-radius:18px;
+    overflow:hidden;
+    margin-bottom:20px;
+    box-shadow:0 5px 15px rgba(0,0,0,0.15);
+    transition:0.3s;
+}
+
+.card:hover{
+    transform:translateY(-5px);
+}
+
+.card img{
+    width:100%;
+    height:180px;
+    object-fit:cover;
+}
+
+.info{
+    padding:15px;
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+}
+
+.info h2{
+    font-size:20px;
+    color:#333;
+}
+
+.price{
+    background:#28a745;
+    color:white;
+    padding:8px 15px;
+    border-radius:25px;
+    font-weight:bold;
+}
+
+.select-btn{
+    width:calc(100% - 30px);
+    margin:0 15px 15px;
+    padding:12px;
+    border:none;
+    border-radius:10px;
+    font-size:16px;
+    background:#0078ff;
+    color:white;
+    cursor:pointer;
+}
+
+.select-btn:hover{
+    background:#005fd1;
+}
+
+#payment-screen{
+    display:none;
+}
+
+.selected-box{
+    background:#f4f4f4;
+    padding:15px;
+    border-radius:12px;
+    margin-bottom:20px;
+    text-align:center;
+}
+
+.pay-btn{
+    width:100%;
+    border:none;
+    padding:15px;
+    margin-bottom:12px;
+    border-radius:10px;
+    color:white;
+    cursor:pointer;
+    font-size:16px;
+    font-weight:bold;
+}
+
+.esewa{
+    background:#60bb46;
+}
+
+.khalti{
+    background:#5c2d91;
+}
+
+.fonepay{
+    background:#0099ff;
+}
+
+.back-btn{
+    width:100%;
+    padding:12px;
+    border:1px solid #ccc;
+    background:white;
+    border-radius:10px;
+    cursor:pointer;
+}
+
+.success{
+    margin-top:15px;
+    text-align:center;
+    color:green;
+    font-weight:bold;
+}
+
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+    <div class="header">
+        <h1>☕Freshow</h1>
+        <p>Select your beverage</p>
+    </div>
+
+    <!-- MENU SCREEN -->
+
+    <div id="menu-screen" class="screen">
+
+        <div class="card">
+
+            <img src="BlackCoffee.jpg" alt="Black Coffee">
+
+            <div class="info">
+                <h2>Black Coffee</h2>
+                <div class="price">Rs. 40</div>
+            </div>
+
+            <button class="select-btn"
+                onclick="selectItem('Black Coffee',40)">
+                Select
+            </button>
+
+        </div>
+
+        <div class="card">
+
+            <img src="MilkTea.png" alt="Milk Tea">
+
+            <div class="info">
+                <h2>Milk Tea</h2>
+                <div class="price">Rs. 50</div>
+            </div>
+
+            <button class="select-btn"
+                onclick="selectItem('Milk Tea',50)">
+                Select
+            </button>
+
+        </div>
+
+        <div class="card">
+
+            <img src="HotWater.jpg" alt="Hot Water">
+            <div class="info">
+                <h2>Hot Water</h2>
+                <div class="price">Rs. 20</div>
+            </div>
+
+            <button class="select-btn"
+                onclick="selectItem('Hot Water',20)">
+                Select
+            </button>
+
+        </div>
+
+    </div>
+
+    <!-- PAYMENT SCREEN -->
+
+    <div id="payment-screen" class="screen">
+
+        <div class="selected-box">
+            <h3 id="itemName"></h3>
+            <p id="itemPrice"></p>
+        </div>
+
+        <button class="pay-btn esewa"
+            onclick="pay('eSewa')">
+            Pay with eSewa
+        </button>
+
+        <button class="pay-btn khalti"
+            onclick="pay('Khalti')">
+            Pay with Khalti
+        </button>
+
+        <button class="pay-btn fonepay"
+            onclick="pay('Fonepay')">
+            Pay with Fonepay
+        </button>
+
+        <button class="back-btn"
+            onclick="goBack()">
+            Back
+        </button>
+
+        <div id="successMessage" class="success"></div>
+
+    </div>
+
+</div>
+
+<script>
+
+let selectedItem = "";
+let selectedPrice = 0;
+
+function selectItem(item, price){
+
+    selectedItem = item;
+    selectedPrice = price;
+
+    document.getElementById("menu-screen").style.display = "none";
+    document.getElementById("payment-screen").style.display = "block";
+
+    document.getElementById("itemName").innerText =
+        "Selected: " + item;
+
+    document.getElementById("itemPrice").innerText =
+        "Amount: Rs. " + price;
+}
+
+function goBack(){
+
+    document.getElementById("menu-screen").style.display = "block";
+    document.getElementById("payment-screen").style.display = "none";
+
+    document.getElementById("successMessage").innerHTML = "";
+}
+
+function pay(method){
+
+    document.getElementById("successMessage").innerHTML =
+    "✅ Demo Payment Selected: " +
+    method +
+    "<br><br>In the final system this will redirect to the actual payment gateway.";
+
+    /*
+        Future Integration:
+
+        eSewa API
+        Khalti API
+        Fonepay API
+
+        After payment success:
+
+        fetch('/dispense', {
+            method:'POST',
+            body: JSON.stringify({
+                item:selectedItem
+            })
+        });
+
+        ESP32 receives command
+        and dispenses beverage.
+    */
+}
+
+</script>
+
+</body>
+</html>
