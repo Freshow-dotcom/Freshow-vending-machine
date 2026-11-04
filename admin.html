@@ -1,5 +1,7 @@
+
 <!DOCTYPE html>
-<html>
+<html lang="en">
+
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -8,51 +10,85 @@
 
 <style>
 
-body{
-    font-family:Segoe UI,sans-serif;
-    background:#1f1c2c;
-    padding:20px;
+* {
+    box-sizing: border-box;
 }
 
-h1{
-    color:white;
-    text-align:center;
+body {
+    font-family: 'Segoe UI', sans-serif;
+    background: #1f1c2c;
+    padding: 20px;
+    margin: 0;
 }
 
-.order{
-
-    background:white;
-    padding:15px;
-    border-radius:12px;
-    margin-bottom:15px;
-
+h1 {
+    color: white;
+    text-align: center;
 }
 
-.pending{
-    color:orange;
-    font-weight:bold;
+.subtitle {
+    color: #ccc;
+    text-align: center;
+    margin-bottom: 25px;
 }
 
-.paid{
-    color:green;
-    font-weight:bold;
+.container {
+    max-width: 650px;
+    margin: auto;
 }
 
-button{
-
-    background:#28a745;
-    color:white;
-    border:none;
-    padding:10px 20px;
-    border-radius:8px;
-    cursor:pointer;
-
+.order {
+    background: white;
+    padding: 20px;
+    border-radius: 12px;
+    margin-bottom: 15px;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.2);
 }
 
-button:hover{
+.order h3 {
+    margin-top: 0;
+    color: #222;
+}
 
-    background:#1f8a39;
+.pending {
+    color: orange;
+    font-weight: bold;
+}
 
+.paid {
+    color: green;
+    font-weight: bold;
+}
+
+button {
+    background: #28a745;
+    color: white;
+    border: none;
+    padding: 12px 20px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 15px;
+}
+
+button:hover {
+    background: #1f8a39;
+}
+
+button:disabled {
+    background: gray;
+    cursor: not-allowed;
+}
+
+.refresh {
+    display: block;
+    margin: 20px auto;
+    background: #0078ff;
+}
+
+.message {
+    color: white;
+    text-align: center;
+    margin: 20px;
 }
 
 </style>
@@ -61,31 +97,175 @@ button:hover{
 
 <body>
 
+<div class="container">
+
 <h1>☕ Freshow Admin Panel</h1>
 
-<div id="orders"></div>
+<p class="subtitle">Manage customer beverage orders</p>
+
+<button class="refresh" onclick="loadOrders()">
+    Refresh Orders
+</button>
+
+<div id="orders" class="message">
+    Loading orders...
+</div>
+
+</div>
 
 <script>
 
-const API =
-"https://freshow-backend.onrender.com";
+const API = "https://freshow-backend.onrender.com";
 
-async function loadOrders(){
 
-    const response =
-    await fetch(API + "/orders");
+// LOAD ORDERS
 
-    const orders =
-    await response.json();
+async function loadOrders() {
 
-    let html = "";
+    const container = document.getElementById("orders");
 
-    orders.reverse().forEach(order=>{
+    try {
 
-        html += `
+        const response = await fetch(API + "/orders");
 
-        <div class="order">
+        if (!response.ok) {
+            throw new Error("Failed to load orders");
+        }
 
-        <h3>${order.item}</h3>
+        const orders = await response.json();
+
+        if (!Array.isArray(orders)) {
+            throw new Error("Invalid orders response");
+        }
+
+        if (orders.length === 0) {
+            container.innerHTML = "No orders received yet.";
+            container.className = "message";
+            return;
+        }
+
+        let html = "";
+
+        orders.reverse().forEach(order => {
+
+            html += `
+
+            <div class="order">
+
+                <h3>☕ ${order.item}</h3>
+
+                <p>
+                    <strong>Order ID:</strong>
+                    ${order.id}
+                </p>
+
+                <p>
+                    <strong>Amount:</strong>
+                    Rs. ${order.amount}
+                </p>
+
+                <p>
+                    <strong>Status:</strong>
+
+                    <span class="${order.status === 'PAID' ? 'paid' : 'pending'}">
+                        ${order.status}
+                    </span>
+
+                </p>
+
+                ${
+                    order.status === "PENDING"
+                    ?
+                    `<button onclick="approveOrder('${order.id}', this)">
+                        Approve Order
+                    </button>`
+                    :
+                    `<p class="paid">✓ Order Approved</p>`
+                }
+
+            </div>
+
+            `;
+
+        });
+
+        container.className = "";
+        container.innerHTML = html;
+
+    }
+
+    catch (error) {
+
+        console.error(error);
+
+        container.className = "message";
+
+        container.innerHTML =
+            "Unable to load orders. Please refresh.";
+
+    }
+
+}
+
+
+// APPROVE ORDER
+
+async function approveOrder(id, button) {
+
+    const confirmApproval = confirm(
+        "Are you sure you want to approve this order?"
+    );
+
+    if (!confirmApproval) return;
+
+    button.disabled = true;
+    button.innerText = "Approving...";
+
+    try {
+
+        const response = await fetch(
+            API + "/approve/" + encodeURIComponent(id),
+            {
+                method: "POST"
+            }
+        );
+
+        if (!response.ok) {
+            throw new Error("Approval failed");
+        }
+
+        const result = await response.json();
+
+        alert("Order approved successfully!");
+
+        loadOrders();
+
+    }
+
+    catch (error) {
+
+        console.error(error);
+
+        alert("Could not approve order. Please try again.");
+
+        button.disabled = false;
+        button.innerText = "Approve Order";
+
+    }
+
+}
+
+
+// AUTOMATIC REFRESH EVERY 5 SECONDS
+
+loadOrders();
+
+setInterval(loadOrders, 5000);
+
+</script>
+
+</body>
+</html>
+
 
      
