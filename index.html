@@ -252,7 +252,20 @@ body{
             onclick="goBack()">
             Back
         </button>
+<div id="qrSection" style="display:none;text-align:center;">
 
+    <img
+    id="paymentQR"
+    src=""
+    width="250"
+    alt="Payment QR"
+    style="border-radius:10px;">
+
+    <br><br>
+
+    <div id="paymentInfo"></div>
+
+</div>
         <div id="successMessage" class="success"></div>
 
     </div>
@@ -286,81 +299,48 @@ function goBack(){
 
     document.getElementById("successMessage").innerHTML = "";
 }
-async function pay(method){
+function pay(method){
 
-    try{
+    document.getElementById("successMessage").innerHTML = "";
 
-        const response = await fetch(
-        "https://freshow-backend.onrender.com/create-order",
-        {
-            method:"POST",
-            headers:{
-                "Content-Type":"application/json"
-            },
-            body: JSON.stringify({
+    document.getElementById("qrSection").style.display = "block";
 
-                item:selectedItem,
+    if(method === "eSewa"){
 
-                amount:selectedPrice
-
-            })
-        });
-
-        const data = await response.json();
-
-        document.getElementById("successMessage").innerHTML =
-
-        `
-        ✅ Order Created
-
-        <br><br>
-
-        Item:
-        <b>${data.item}</b>
-
-        <br>
-
-        Amount:
-        Rs. ${data.amount}
-
-        <br><br>
-
-        Status:
-
-        <span style="color:orange;font-weight:bold;">
-
-        ${data.status}
-
-        </span>
-
-        <br><br>
-
-        Awaiting Payment Approval
-
-        <br><br>
-
-        Pay using your eSewa QR and wait for admin approval.
-
-        `;
+        document.getElementById(
+        "paymentQR"
+        ).src = "EsewaQR.jpg";
 
     }
 
-    catch(error){
+    if(method === "Khalti"){
 
-        document.getElementById("successMessage").innerHTML =
-
-        "❌ Backend connection failed";
-
-        console.log(error);
+        document.getElementById(
+        "paymentQR"
+        ).src = "KhaltiQR.jpg";
 
     }
+
+    document.getElementById(
+    "paymentInfo"
+    ).innerHTML =
+
+    `
+    <b>Item:</b> ${selectedItem}
+
+    <br><br>
+
+    <b>Amount:</b>
+    Rs. ${selectedPrice}
+
+    <br><br>
+
+    Scan QR and complete payment.
+    `;
 
 }
 
-       
-
-        
-
+}
 
 </script>
 
