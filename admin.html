@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Freshow Admin Panel</title>
+
+<style>
+
+body{
+    font-family:Segoe UI,sans-serif;
+    background:#1f1c2c;
+    padding:20px;
+}
+
+h1{
+    color:white;
+    text-align:center;
+}
+
+.order{
+
+    background:white;
+    padding:15px;
+    border-radius:12px;
+    margin-bottom:15px;
+
+}
+
+.pending{
+    color:orange;
+    font-weight:bold;
+}
+
+.paid{
+    color:green;
+    font-weight:bold;
+}
+
+button{
+
+    background:#28a745;
+    color:white;
+    border:none;
+    padding:10px 20px;
+    border-radius:8px;
+    cursor:pointer;
+
+}
+
+button:hover{
+
+    background:#1f8a39;
+
+}
+
+</style>
+
+</head>
+
+<body>
+
+<h1>☕ Freshow Admin Panel</h1>
+
+<div id="orders"></div>
+
+<script>
+
+const API =
+"https://freshow-backend.onrender.com";
+
+async function loadOrders(){
+
+    const response =
+    await fetch(API + "/orders");
+
+    const orders =
+    await response.json();
+
+    let html = "";
+
+    orders.reverse().forEach(order=>{
+
+        html += `
+
+        <div class="order">
+
+        <h3>${order.item}</h3>
+
+     
