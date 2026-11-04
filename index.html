@@ -3,160 +3,197 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Smart Beverage Machine</title>
+<title>Freshow - Smart Beverage Machine</title>
 
 <style>
 
-*{
-    margin:0;
-    padding:0;
-    box-sizing:border-box;
-    font-family:'Segoe UI',sans-serif;
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Segoe UI', sans-serif;
 }
 
-body{
-    background:linear-gradient(135deg,#1f1c2c,#928dab);
-    min-height:100vh;
-    display:flex;
-    justify-content:center;
-    align-items:center;
-    padding:20px;
+body {
+    background: linear-gradient(135deg, #1f1c2c, #928dab);
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
 }
 
-.container{
-    width:100%;
-    max-width:450px;
-    background:white;
-    border-radius:25px;
-    overflow:hidden;
-    box-shadow:0 15px 40px rgba(0,0,0,0.3);
+.container {
+    width: 100%;
+    max-width: 450px;
+    background: white;
+    border-radius: 25px;
+    overflow: hidden;
+    box-shadow: 0 15px 40px rgba(0,0,0,0.3);
 }
 
-.header{
-    background:#1b1b1b;
-    color:white;
-    text-align:center;
-    padding:25px;
+.header {
+    background: #1b1b1b;
+    color: white;
+    text-align: center;
+    padding: 25px;
 }
 
-.header h1{
-    font-size:28px;
+.header h1 {
+    font-size: 28px;
 }
 
-.header p{
-    opacity:0.8;
-    margin-top:5px;
+.header p {
+    opacity: 0.8;
+    margin-top: 5px;
 }
 
-.screen{
-    padding:20px;
+.screen {
+    padding: 20px;
 }
 
-.card{
-    background:#ffffff;
-    border-radius:18px;
-    overflow:hidden;
-    margin-bottom:20px;
-    box-shadow:0 5px 15px rgba(0,0,0,0.15);
-    transition:0.3s;
+.card {
+    background: white;
+    border-radius: 18px;
+    overflow: hidden;
+    margin-bottom: 20px;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.15);
+    transition: 0.3s;
 }
 
-.card:hover{
-    transform:translateY(-5px);
+.card:hover {
+    transform: translateY(-5px);
 }
 
-.card img{
-    width:100%;
-    height:180px;
-    object-fit:cover;
+.card img {
+    width: 100%;
+    height: 180px;
+    object-fit: cover;
 }
 
-.info{
-    padding:15px;
-    display:flex;
-    justify-content:space-between;
-    align-items:center;
+.info {
+    padding: 15px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
 }
 
-.info h2{
-    font-size:20px;
-    color:#333;
+.info h2 {
+    font-size: 20px;
+    color: #333;
 }
 
-.price{
-    background:#28a745;
-    color:white;
-    padding:8px 15px;
-    border-radius:25px;
-    font-weight:bold;
+.price {
+    background: #28a745;
+    color: white;
+    padding: 8px 15px;
+    border-radius: 25px;
+    font-weight: bold;
 }
 
-.select-btn{
-    width:calc(100% - 30px);
-    margin:0 15px 15px;
-    padding:12px;
-    border:none;
-    border-radius:10px;
-    font-size:16px;
-    background:#0078ff;
-    color:white;
-    cursor:pointer;
+.select-btn {
+    width: calc(100% - 30px);
+    margin: 0 15px 15px;
+    padding: 12px;
+    border: none;
+    border-radius: 10px;
+    font-size: 16px;
+    background: #0078ff;
+    color: white;
+    cursor: pointer;
 }
 
-.select-btn:hover{
-    background:#005fd1;
+.select-btn:hover {
+    background: #005fd1;
 }
 
-#payment-screen{
-    display:none;
+#payment-screen,
+#qr-screen {
+    display: none;
 }
 
-.selected-box{
-    background:#f4f4f4;
-    padding:15px;
-    border-radius:12px;
-    margin-bottom:20px;
-    text-align:center;
+.selected-box {
+    background: #f4f4f4;
+    padding: 15px;
+    border-radius: 12px;
+    margin-bottom: 20px;
+    text-align: center;
 }
 
-.pay-btn{
-    width:100%;
-    border:none;
-    padding:15px;
-    margin-bottom:12px;
-    border-radius:10px;
-    color:white;
-    cursor:pointer;
-    font-size:16px;
-    font-weight:bold;
+.pay-btn {
+    width: 100%;
+    border: none;
+    padding: 15px;
+    margin-bottom: 12px;
+    border-radius: 10px;
+    color: white;
+    cursor: pointer;
+    font-size: 16px;
+    font-weight: bold;
 }
 
-.esewa{
-    background:#60bb46;
+.esewa {
+    background: #60bb46;
 }
 
-.khalti{
-    background:#5c2d91;
+.khalti {
+    background: #5c2d91;
 }
 
-.fonepay{
-    background:#0099ff;
+.back-btn {
+    width: 100%;
+    padding: 12px;
+    border: 1px solid #ccc;
+    background: white;
+    border-radius: 10px;
+    cursor: pointer;
 }
 
-.back-btn{
-    width:100%;
-    padding:12px;
-    border:1px solid #ccc;
-    background:white;
-    border-radius:10px;
-    cursor:pointer;
+.qr-section {
+    text-align: center;
 }
 
-.success{
-    margin-top:15px;
-    text-align:center;
-    color:green;
-    font-weight:bold;
+.qr-section h2 {
+    margin-bottom: 10px;
+}
+
+.qr-section p {
+    margin: 10px 0;
+    color: #555;
+}
+
+.qr-section img {
+    width: 230px;
+    height: 230px;
+    object-fit: contain;
+    margin: 15px auto;
+    padding: 10px;
+    background: white;
+    border: 1px solid #ddd;
+    border-radius: 12px;
+    display: block;
+}
+
+.qr-amount {
+    font-size: 20px;
+    font-weight: bold;
+    color: #28a745;
+}
+
+.payment-note {
+    background: #fff3cd;
+    color: #856404;
+    padding: 12px;
+    border-radius: 10px;
+    font-size: 13px;
+    margin: 15px 0;
+}
+
+.success {
+    margin-top: 15px;
+    text-align: center;
+    color: green;
+    font-weight: bold;
 }
 
 </style>
@@ -167,7 +204,7 @@ body{
 <div class="container">
 
     <div class="header">
-        <h1>☕Freshow</h1>
+        <h1>☕ Freshow</h1>
         <p>Select your beverage</p>
     </div>
 
@@ -210,6 +247,7 @@ body{
         <div class="card">
 
             <img src="HotWater.jpg" alt="Hot Water">
+
             <div class="info">
                 <h2>Hot Water</h2>
                 <div class="price">Rs. 20</div>
@@ -224,6 +262,7 @@ body{
 
     </div>
 
+
     <!-- PAYMENT SCREEN -->
 
     <div id="payment-screen" class="screen">
@@ -234,111 +273,125 @@ body{
         </div>
 
         <button class="pay-btn esewa"
-            onclick="pay('eSewa')">
+            onclick="showQR('eSewa')">
             Pay with eSewa
         </button>
 
         <button class="pay-btn khalti"
-            onclick="pay('Khalti')">
+            onclick="showQR('Khalti')">
             Pay with Khalti
         </button>
 
-        <button class="pay-btn fonepay"
-            onclick="pay('Fonepay')">
-            Pay with Fonepay
+        <button class="back-btn" onclick="goBack()">
+            Back to Menu
         </button>
 
-        <button class="back-btn"
-            onclick="goBack()">
-            Back
-        </button>
-<div id="qrSection" style="display:none;text-align:center;">
+    </div>
 
-    <img
-    id="paymentQR"
-    src=""
-    width="250"
-    alt="Payment QR"
-    style="border-radius:10px;">
 
-    <br><br>
+    <!-- QR CODE SCREEN -->
 
-    <div id="paymentInfo"></div>
+    <div id="qr-screen" class="screen">
 
-</div>
-        <div id="successMessage" class="success"></div>
+        <div class="qr-section">
+
+            <h2 id="qr-title"></h2>
+
+            <p>Scan this QR code using your payment app.</p>
+
+            <img id="qr-image" src="" alt="Payment QR Code">
+
+            <p class="qr-amount" id="qr-amount"></p>
+
+            <div class="payment-note">
+                Please complete your payment using the displayed QR code.
+                This is a demo display; payment is not automatically verified.
+            </div>
+
+            <button class="back-btn" onclick="backToPayment()">
+                Back to Payment Options
+            </button>
+
+        </div>
 
     </div>
 
 </div>
+
 
 <script>
 
 let selectedItem = "";
 let selectedPrice = 0;
 
-function selectItem(item, price){
+
+// SELECT BEVERAGE
+
+function selectItem(item, price) {
 
     selectedItem = item;
     selectedPrice = price;
 
     document.getElementById("menu-screen").style.display = "none";
     document.getElementById("payment-screen").style.display = "block";
+    document.getElementById("qr-screen").style.display = "none";
 
     document.getElementById("itemName").innerText =
         "Selected: " + item;
 
     document.getElementById("itemPrice").innerText =
         "Amount: Rs. " + price;
+
 }
 
-function goBack(){
 
-    document.getElementById("menu-screen").style.display = "block";
+// SHOW QR CODE
+
+function showQR(method) {
+
+    let qrImage = document.getElementById("qr-image");
+
     document.getElementById("payment-screen").style.display = "none";
+    document.getElementById("qr-screen").style.display = "block";
 
-    document.getElementById("successMessage").innerHTML = "";
-}
-function pay(method){
+    document.getElementById("qr-title").innerText =
+        method + " QR Payment";
 
-    document.getElementById("successMessage").innerHTML = "";
+    document.getElementById("qr-amount").innerText =
+        "Please pay Rs. " + selectedPrice;
 
-    document.getElementById("qrSection").style.display = "block";
 
-    if(method === "eSewa"){
+    if (method === "eSewa") {
 
-        document.getElementById(
-        "paymentQR"
-        ).src = "EsewaQR.jpg";
+        qrImage.src = "EsewaQR.jpg";
 
     }
 
-    if(method === "Khalti"){
+    else if (method === "Khalti") {
 
-        document.getElementById(
-        "paymentQR"
-        ).src = "KhaltiQR.jpg";
+        qrImage.src = "KhaltiQR.jpg";
 
     }
 
-    document.getElementById(
-    "paymentInfo"
-    ).innerHTML =
+}
 
-    `
-    <b>Item:</b> ${selectedItem}
 
-    <br><br>
+// BACK TO PAYMENT OPTIONS
 
-    <b>Amount:</b>
-    Rs. ${selectedPrice}
+function backToPayment() {
 
-    <br><br>
-
-    Scan QR and complete payment.
-    `;
+    document.getElementById("qr-screen").style.display = "none";
+    document.getElementById("payment-screen").style.display = "block";
 
 }
+
+
+// BACK TO MENU
+
+function goBack() {
+
+    document.getElementById("payment-screen").style.display = "none";
+    document.getElementById("menu-screen").style.display = "block";
 
 }
 
@@ -346,3 +399,4 @@ function pay(method){
 
 </body>
 </html>
+
