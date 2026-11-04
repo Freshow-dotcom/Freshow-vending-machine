@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -196,6 +197,59 @@ body {
     font-weight: bold;
 }
 
+/* NEW ORDER BUTTON */
+
+.complete-btn {
+    width: 100%;
+    padding: 14px;
+    background: #0078ff;
+    color: white;
+    border: none;
+    border-radius: 10px;
+    font-size: 16px;
+    font-weight: bold;
+    cursor: pointer;
+    margin-bottom: 12px;
+}
+
+.complete-btn:hover {
+    background: #005fd1;
+}
+
+.complete-btn:disabled {
+    background: #999;
+    cursor: not-allowed;
+}
+
+/* ORDER STATUS */
+
+.order-status {
+    display: none;
+    padding: 15px;
+    border-radius: 12px;
+    margin: 15px 0;
+    font-weight: bold;
+    text-align: center;
+}
+
+.pending-status {
+    display: block;
+    background: #fff3cd;
+    color: #856404;
+}
+
+.success-status {
+    display: block;
+    background: #d4edda;
+    color: #155724;
+}
+
+.error-status {
+    display: block;
+    background: #f8d7da;
+    color: #721c24;
+}
+
 </style>
 </head>
 
@@ -305,11 +359,31 @@ body {
 
             <div class="payment-note">
                 Please complete your payment using the displayed QR code.
-                This is a demo display; payment is not automatically verified.
+                After paying, click the button below to submit your order.
             </div>
 
-            <button class="back-btn" onclick="backToPayment()">
+            <!-- CUSTOMER CONFIRMATION BUTTON -->
+
+            <button
+                id="complete-btn"
+                class="complete-btn"
+                onclick="submitOrder()">
+
+                I've Completed Payment
+
+            </button>
+
+            <!-- ORDER STATUS MESSAGE -->
+
+            <div id="order-status" class="order-status"></div>
+
+            <button
+                id="qr-back-btn"
+                class="back-btn"
+                onclick="backToPayment()">
+
                 Back to Payment Options
+
             </button>
 
         </div>
@@ -321,8 +395,17 @@ body {
 
 <script>
 
+// BACKEND URL
+
+const API = "https://freshow-backend.onrender.com";
+
 let selectedItem = "";
 let selectedPrice = 0;
+let selectedMethod = "";
+
+let currentOrderId = null;
+let statusInterval = null;
+let orderSubmitting = false;
 
 
 // SELECT BEVERAGE
@@ -349,6 +432,8 @@ function selectItem(item, price) {
 
 function showQR(method) {
 
+    selectedMethod = method;
+
     let qrImage = document.getElementById("qr-image");
 
     document.getElementById("payment-screen").style.display = "none";
@@ -360,6 +445,8 @@ function showQR(method) {
     document.getElementById("qr-amount").innerText =
         "Please pay Rs. " + selectedPrice;
 
+
+    // YOUR ORIGINAL QR CODES - UNCHANGED
 
     if (method === "eSewa") {
 
@@ -373,12 +460,221 @@ function showQR(method) {
 
     }
 
+    // RESET ORDER DISPLAY
+
+    currentOrderId = null;
+    orderSubmitting = false;
+
+    if (statusInterval) {
+        clearInterval(statusInterval);
+        statusInterval = null;
+    }
+
+    document.getElementById("order-status").className =
+        "order-status";
+
+    document.getElementById("order-status").innerText = "";
+
+    document.getElementById("complete-btn").disabled = false;
+    document.getElementById("complete-btn").style.display = "block";
+
+    document.getElementById("qr-back-btn").style.display = "block";
+
+}
+
+
+// SUBMIT CUSTOMER ORDER
+
+async function submitOrder() {
+
+    if (orderSubmitting || currentOrderId !== null) {
+        return;
+    }
+
+    orderSubmitting = true;
+
+    const button = document.getElementById("complete-btn");
+
+    button.disabled = true;
+    button.innerText = "Submitting Order...";
+
+    try {
+
+        const response = await fetch(API + "/create-order", {
+
+            method: "POST",
+
+            headers: {
+                "Content-Type": "application/json"
+            },
+
+            body: JSON.stringify({
+
+                item: selectedItem,
+
+                amount: selectedPrice,
+
+                paymentMethod: selectedMethod
+
+            })
+
+        });
+
+        if (!response.ok) {
+            throw new Error("Order submission failed");
+        }
+
+        const order = await response.json();
+
+        currentOrderId = order.id;
+
+        // SHOW PENDING MESSAGE
+
+        showStatus(
+            "PENDING",
+            "⏳ Your order has been submitted! Waiting for admin approval."
+        );
+
+        button.innerText = "Order Submitted";
+
+        // PREVENT CUSTOMER FROM SUBMITTING DUPLICATE ORDER
+
+        button.style.display = "none";
+
+        document.getElementById("qr-back-btn").style.display = "none";
+
+        // CHECK ADMIN APPROVAL EVERY 5 SECONDS
+
+        checkOrderStatus();
+
+        statusInterval = setInterval(checkOrderStatus, 5000);
+
+    }
+
+    catch (error) {
+
+        console.error(error);
+
+        showStatus(
+            "ERROR",
+            "❌ Could not submit your order. Please try again."
+        );
+
+        button.disabled = false;
+        button.innerText = "Try Again";
+
+        orderSubmitting = false;
+
+    }
+
+}
+
+
+// DISPLAY ORDER STATUS
+
+function showStatus(type, message) {
+
+    const statusBox = document.getElementById("order-status");
+
+    statusBox.style.display = "block";
+
+    statusBox.className = "order-status";
+
+    if (type === "PENDING") {
+
+        statusBox.classList.add("pending-status");
+
+    }
+
+    else if (type === "SUCCESS") {
+
+        statusBox.classList.add("success-status");
+
+    }
+
+    else {
+
+        statusBox.classList.add("error-status");
+
+    }
+
+    statusBox.innerText = message;
+
+}
+
+
+// CHECK ADMIN APPROVAL
+
+async function checkOrderStatus() {
+
+    if (currentOrderId === null) {
+        return;
+    }
+
+    try {
+
+        const response = await fetch(API + "/orders");
+
+        if (!response.ok) {
+            throw new Error("Could not check order status");
+        }
+
+        const orders = await response.json();
+
+        const myOrder = orders.find(
+            order => String(order.id) === String(currentOrderId)
+        );
+
+        if (!myOrder) {
+            return;
+        }
+
+        // ADMIN APPROVED THE ORDER
+
+        if (myOrder.status === "PAID" ||
+            myOrder.status === "SUCCESS") {
+
+            showStatus(
+                "SUCCESS",
+                "✅ SUCCESS! Your payment has been approved. Your order is confirmed!"
+            );
+
+            clearInterval(statusInterval);
+            statusInterval = null;
+
+        }
+
+        // ORDER IS STILL WAITING
+
+        else if (myOrder.status === "PENDING") {
+
+            showStatus(
+                "PENDING",
+                "⏳ Payment submitted. Waiting for admin approval..."
+            );
+
+        }
+
+    }
+
+    catch (error) {
+
+        console.error("Status check error:", error);
+
+        // Keep the pending state and retry on the next check.
+
+    }
+
 }
 
 
 // BACK TO PAYMENT OPTIONS
 
 function backToPayment() {
+
+    if (currentOrderId !== null) {
+        return;
+    }
 
     document.getElementById("qr-screen").style.display = "none";
     document.getElementById("payment-screen").style.display = "block";
@@ -399,4 +695,5 @@ function goBack() {
 
 </body>
 </html>
+
 
