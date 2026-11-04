@@ -286,34 +286,81 @@ function goBack(){
 
     document.getElementById("successMessage").innerHTML = "";
 }
+async function pay(method){
 
-function pay(method){
+    try{
 
-    document.getElementById("successMessage").innerHTML =
-    "✅ Demo Payment Selected: " +
-    method +
-    "<br><br>In the final system this will redirect to the actual payment gateway.";
-
-    /*
-        Future Integration:
-
-        eSewa API
-        Khalti API
-        Fonepay API
-
-        After payment success:
-
-        fetch('/dispense', {
-            method:'POST',
+        const response = await fetch(
+        "https://freshow-backend.onrender.com/create-order",
+        {
+            method:"POST",
+            headers:{
+                "Content-Type":"application/json"
+            },
             body: JSON.stringify({
-                item:selectedItem
+
+                item:selectedItem,
+
+                amount:selectedPrice
+
             })
         });
 
-        ESP32 receives command
-        and dispenses beverage.
-    */
+        const data = await response.json();
+
+        document.getElementById("successMessage").innerHTML =
+
+        `
+        ✅ Order Created
+
+        <br><br>
+
+        Item:
+        <b>${data.item}</b>
+
+        <br>
+
+        Amount:
+        Rs. ${data.amount}
+
+        <br><br>
+
+        Status:
+
+        <span style="color:orange;font-weight:bold;">
+
+        ${data.status}
+
+        </span>
+
+        <br><br>
+
+        Awaiting Payment Approval
+
+        <br><br>
+
+        Pay using your eSewa QR and wait for admin approval.
+
+        `;
+
+    }
+
+    catch(error){
+
+        document.getElementById("successMessage").innerHTML =
+
+        "❌ Backend connection failed";
+
+        console.log(error);
+
+    }
+
 }
+
+       
+
+        
+
 
 </script>
 
